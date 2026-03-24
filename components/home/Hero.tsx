@@ -1,113 +1,114 @@
+'use client';
+
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 import { Icon } from '@iconify/react';
+
+const fade = (delay: number) => ({
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.6, ease: 'easeOut' as const, delay },
+});
 
 export default function Hero() {
   return (
-    <section className="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
-      {/* Abstract background elements */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[500px] bg-gradient-to-b from-indigo-50/50 to-transparent -z-10"></div>
-      <div className="absolute top-1/4 -right-64 w-96 h-96 bg-indigo-100/40 rounded-full blur-3xl -z-10"></div>
-      <div className="absolute top-1/3 -left-64 w-96 h-96 bg-blue-100/40 rounded-full blur-3xl -z-10"></div>
+    <section className="relative w-full h-screen min-h-svh flex flex-col">
+      {/* Background image */}
+      <div
+        className="absolute inset-0 bg-cover bg-center"
+        style={{
+          backgroundImage:
+            'url(https://images.unsplash.com/photo-1568605114967-8130f3a36994?auto=format&fit=crop&w=1920&q=80)',
+        }}
+      />
 
-      <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-        
-        {/* Hero Copy */}
-        <div className="max-w-2xl">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-700 text-xs font-medium mb-6">
-            <Icon icon="solar:map-point-linear" />
-            Local to Mountlake Terrace, WA
+      {/* Dark gradient overlay — directional on desktop, solid on mobile */}
+      <div className="absolute inset-0 bg-black/70 md:bg-transparent md:bg-gradient-to-r md:from-black/[0.82] md:via-black/[0.55] md:to-black/[0.25]" />
+
+      {/* Main content */}
+      <div className="relative z-10 flex-1 flex items-center">
+        <div className="max-w-7xl mx-auto px-6 w-full pt-28 pb-24 md:pt-32 md:pb-20">
+          <div className="max-w-2xl mx-auto text-center md:mx-0 md:text-left md:max-w-[55%]">
+            {/* Badge */}
+            <motion.div {...fade(0)} className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/[0.15] border border-white/20 text-white text-xs font-medium mb-6">
+              <Icon icon="solar:map-point-linear" className="text-sm" />
+              Licensed Washington State Mortgage Broker
+            </motion.div>
+
+            {/* Headline */}
+            <motion.h1
+              {...fade(0.15)}
+              className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white leading-[1.1] mb-6 drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]"
+            >
+              Home Loans for Every Stage of Your Life
+            </motion.h1>
+
+            {/* Subheadline */}
+            <motion.p
+              {...fade(0.3)}
+              className="text-lg lg:text-xl text-white/90 leading-relaxed mb-6 max-w-[540px] mx-auto md:mx-0 drop-shadow-[0_1px_3px_rgba(0,0,0,0.4)]"
+            >
+              We are home loan experts dedicated to making sure your home purchase or refinance experience is top-notch. Located in Mountlake Terrace, WA.
+            </motion.p>
+
+            {/* Trust strip */}
+            <motion.div
+              {...fade(0.4)}
+              className="flex flex-wrap justify-center md:justify-start gap-x-6 gap-y-2 text-sm text-white/80 mb-8"
+            >
+              <span className="flex items-center gap-1.5">
+                <Icon icon="solar:check-circle-linear" className="text-base" />
+                No Hidden Fees
+              </span>
+              <span className="flex items-center gap-1.5">
+                <Icon icon="solar:check-circle-linear" className="text-base" />
+                Local WA Lender
+              </span>
+              <span className="flex items-center gap-1.5">
+                <Icon icon="solar:check-circle-linear" className="text-base" />
+                Secure &amp; Encrypted
+              </span>
+            </motion.div>
+
+            {/* CTA Buttons */}
+            <motion.div
+              {...fade(0.5)}
+              className="flex flex-col sm:flex-row items-center gap-4"
+            >
+              <Link
+                href="/home-purchase"
+                className="w-full sm:w-auto h-12 px-8 inline-flex items-center justify-center rounded-lg bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700 transition-colors shadow-lg"
+              >
+                Start Your Application
+                <span className="ml-2">→</span>
+              </Link>
+              <Link
+                href="/contact"
+                className="w-full sm:w-auto h-12 px-8 inline-flex items-center justify-center rounded-lg border border-white text-white text-sm font-medium hover:bg-white hover:text-slate-900 transition-colors"
+              >
+                Contact Us
+              </Link>
+            </motion.div>
           </div>
-          <h1 className="text-5xl lg:text-6xl font-semibold tracking-tight text-slate-900 leading-[1.1] mb-6">
-            A smarter way to finance your <span className="text-indigo-600">dream home.</span>
-          </h1>
-          <p className="text-lg text-slate-500 font-normal leading-relaxed mb-8 max-w-xl">
-            Experience a fully digital mortgage process with transparent rates, expert local guidance, and absolutely no hidden fees. Your journey to homeownership in Washington starts here.
-          </p>
-          
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-            <Link href="/contact" className="h-11 px-6 inline-flex items-center justify-center rounded-lg bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700 transition-colors w-full sm:w-auto shadow-sm">
-              Start your application
-              <Icon icon="solar:arrow-right-linear" className="ml-2" />
-            </Link>
-            <Link href="/calculators" className="h-11 px-6 inline-flex items-center justify-center rounded-lg bg-white border border-slate-200 text-slate-700 text-sm font-medium hover:bg-slate-50 transition-colors w-full sm:w-auto shadow-sm">
-              View current rates
-            </Link>
-          </div>
-
-          <div className="mt-10 flex items-center gap-6 text-sm text-slate-500">
-            <div className="flex items-center gap-2">
-              <Icon icon="solar:shield-check-linear" className="text-indigo-600" />
-              Secure &amp; Encrypted
-            </div>
-            <div className="flex items-center gap-2">
-              <Icon icon="solar:clock-circle-linear" className="text-indigo-600" />
-              Close in 21 Days
-            </div>
-          </div>
-        </div>
-
-        {/* Hero Interactive Mockup */}
-        <div className="relative lg:ml-auto w-full max-w-md">
-          <div className="bg-white border border-slate-200/60 rounded-2xl shadow-[0_20px_40px_-15px_rgba(0,0,0,0.05)] p-8 relative z-10">
-            <div className="flex items-center justify-between mb-8">
-              <h3 className="text-lg font-semibold tracking-tight text-slate-900">Rate Calculator</h3>
-              <div className="p-2 bg-slate-50 rounded-lg text-slate-400">
-                <Icon icon="solar:calculator-linear" />
-              </div>
-            </div>
-
-            {/* Mock Input Group */}
-            <div className="mb-6">
-              <label className="block text-xs font-medium text-slate-500 mb-2 uppercase tracking-wide">Home Price</label>
-              <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm">$</span>
-                <div className="w-full h-11 border border-slate-200 rounded-lg flex items-center px-8 text-slate-900 text-sm font-medium bg-slate-50/50">
-                  650,000
-                </div>
-              </div>
-            </div>
-
-            {/* Custom Mock Slider */}
-            <div className="mb-8">
-              <div className="flex justify-between items-center mb-2">
-                <label className="block text-xs font-medium text-slate-500 uppercase tracking-wide">Down Payment</label>
-                <span className="text-sm font-medium text-indigo-600">20%</span>
-              </div>
-              <div className="w-full bg-slate-100 rounded-full h-1.5 relative">
-                <div className="bg-indigo-600 h-1.5 rounded-full w-1/5 relative">
-                  <div className="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 bg-white border border-slate-200 rounded-full shadow-sm cursor-pointer hover:border-indigo-400 transition-colors"></div>
-                </div>
-              </div>
-              <div className="flex justify-between mt-2 text-xs text-slate-400">
-                <span>$0</span>
-                <span>$130,000</span>
-              </div>
-            </div>
-
-            {/* Mock Custom Toggle */}
-            <div className="flex items-center justify-between py-4 border-t border-slate-100 mb-4">
-              <span className="text-sm font-medium text-slate-600">Include Taxes &amp; Insurance</span>
-              <div className="w-9 h-5 bg-indigo-600 rounded-full relative cursor-pointer">
-                <div className="absolute right-0.5 top-0.5 w-4 h-4 bg-white rounded-full shadow-sm transition-transform"></div>
-              </div>
-            </div>
-
-            <div className="bg-slate-50 p-4 rounded-xl flex items-center justify-between border border-slate-100">
-              <div>
-                <span className="block text-xs text-slate-500 mb-1">Estimated Monthly</span>
-                <span className="text-2xl font-semibold tracking-tight text-slate-900">$3,482</span>
-              </div>
-              <div className="text-right">
-                <span className="block text-xs text-slate-500 mb-1">30-Year Fixed</span>
-                <span className="text-sm font-medium text-emerald-600">6.125% Rate</span>
-              </div>
-            </div>
-          </div>
-          
-          {/* Decorative background card */}
-          <div className="absolute -right-4 -bottom-4 w-full h-full border border-slate-200/50 rounded-2xl bg-slate-50/50 -z-10"></div>
         </div>
       </div>
+
+      {/* Bottom strip */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.6, ease: 'easeOut', delay: 0.6 }}
+        className="relative z-10 bg-black/40"
+      >
+        <div className="max-w-7xl mx-auto px-6 py-3 flex flex-col sm:flex-row items-center justify-between gap-2 text-sm text-white">
+          <a href="tel:+14255825615" className="flex items-center gap-2 hover:text-white/80 transition-colors">
+            <span>📞</span> (425) 582-5615
+          </a>
+          <span className="flex items-center gap-2">
+            <span>📍</span> 6100 219th St SW Suite 480, Mountlake Terrace, WA 98043
+          </span>
+        </div>
+      </motion.div>
     </section>
   );
 }

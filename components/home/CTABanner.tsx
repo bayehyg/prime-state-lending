@@ -12,8 +12,8 @@ export default function CTABanner() {
         <p className="text-slate-400 text-lg mb-10 max-w-2xl mx-auto">Join thousands of Washington residents who trust Prime State Lending for a transparent, fast, and local mortgage experience.</p>
         
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <Link href="/contact" className="h-12 px-8 inline-flex items-center justify-center rounded-lg bg-white text-slate-900 text-base font-medium hover:bg-slate-50 transition-colors w-full sm:w-auto">
-            Start Application
+          <Link href="/home-purchase" className="h-12 px-8 inline-flex items-center justify-center rounded-lg bg-white text-slate-900 text-base font-medium hover:bg-slate-50 transition-colors w-full sm:w-auto">
+            Get Pre-Approved
           </Link>
           <Link href="/contact" className="h-12 px-8 inline-flex items-center justify-center rounded-lg bg-slate-800 text-white border border-slate-700 text-base font-medium hover:bg-slate-700 transition-colors w-full sm:w-auto">
             Talk to an Expert

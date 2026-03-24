@@ -14,11 +14,13 @@ export default function ContactPage() {
     message: '',
   });
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const validate = () => {
     const newErrors: Record<string, string> = {};
-    
+
     if (!formData.name.trim()) newErrors.name = 'Name is required';
     if (!formData.email.trim()) {
       newErrors.email = 'Email is required';
@@ -33,10 +35,40 @@ export default function ContactPage() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (validate()) {
-      setSubmitted(true);
+    if (!validate()) return;
+
+    setSubmitting(true);
+    setSubmitError('');
+
+    try {
+      const response = await fetch('https://formsubmit.co/ajax/info@primestatelending.com', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+          _subject: 'New Contact Form Submission',
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          loanType: formData.loanType,
+          message: formData.message,
+          source: 'Contact Form — primestatelending.com'
+        })
+      });
+
+      if (response.ok) {
+        setSubmitted(true);
+      } else {
+        setSubmitError('Something went wrong. Please call us at (425) 582-5615 or email info@primestatelending.com.');
+      }
+    } catch {
+      setSubmitError('Something went wrong. Please call us at (425) 582-5615 or email info@primestatelending.com.');
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -87,7 +119,7 @@ export default function ContactPage() {
                 </div>
                 <h3 className="text-sm font-semibold text-slate-900 mb-2">Visit Us</h3>
                 <p className="text-sm text-slate-500">
-                  6000 244th St SW<br />
+                  6100 219th St SW Suite 480<br />
                   Mountlake Terrace, WA 98043
                 </p>
               </div>
@@ -97,7 +129,16 @@ export default function ContactPage() {
                   <Icon icon="solar:phone-linear" className="text-xl" />
                 </div>
                 <h3 className="text-sm font-semibold text-slate-900 mb-2">Call Us</h3>
-                <p className="text-sm text-slate-500">(800) 555-0199</p>
+                <p className="text-sm text-slate-500">(425) 582-5615</p>
+                <p className="text-sm text-slate-500">206-849-4267</p>
+              </div>
+
+              <div className="bg-white border border-slate-200 rounded-xl p-6">
+                <div className="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-lg flex items-center justify-center mb-4">
+                  <Icon icon="solar:letter-linear" className="text-xl" />
+                </div>
+                <h3 className="text-sm font-semibold text-slate-900 mb-2">Email Us</h3>
+                <p className="text-sm text-slate-500">info@primestatelending.com</p>
               </div>
 
               <div className="bg-white border border-slate-200 rounded-xl p-6">
@@ -181,11 +222,19 @@ export default function ContactPage() {
 
                 <button
                   type="submit"
-                  className="mt-6 h-11 px-6 inline-flex items-center justify-center rounded-lg bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700 transition-colors w-full"
+                  disabled={submitting}
+                  className="mt-6 h-11 px-6 inline-flex items-center justify-center rounded-lg bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700 disabled:opacity-70 transition-colors w-full"
                 >
-                  Send Message
-                  <Icon icon="solar:arrow-right-linear" className="ml-2" />
+                  {submitting ? 'Sending…' : (
+                    <>
+                      Send Message
+                      <Icon icon="solar:arrow-right-linear" className="ml-2" />
+                    </>
+                  )}
                 </button>
+                {submitError && (
+                  <p className="mt-3 text-sm text-red-600 text-center">{submitError}</p>
+                )}
               </form>
             </div>
           </div>
