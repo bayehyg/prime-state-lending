@@ -309,44 +309,44 @@ export default function MortgageBasicsPage() {
       <main className="pt-24 pb-20 min-h-screen">
         <div className="max-w-4xl mx-auto px-6">
           <div className="text-center mb-16">
-            <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight text-slate-900 mb-4">
+            <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight text-heading mb-4">
               Mortgage Basics
             </h1>
-            <p className="text-lg text-slate-500">
+            <p className="text-lg text-body">
               Jump in and get an overview on common mortgage terms
             </p>
           </div>
 
           <div className="space-y-4">
             {topics.map((topic, index) => (
-              <div key={topic.title} className="bg-white border border-slate-200 rounded-xl overflow-hidden">
+              <div key={topic.title} className="bg-white border border-edge rounded-xl overflow-hidden">
                 <button
                   onClick={() => setOpenIndex(openIndex === index ? null : index)}
-                  className="w-full px-6 py-5 flex items-center gap-4 text-left hover:bg-slate-50 transition-colors"
+                  className="w-full px-6 py-5 flex items-center gap-4 text-left hover:bg-surface transition-colors"
                 >
-                  <div className="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-lg flex items-center justify-center shrink-0">
+                  <div className="w-10 h-10 bg-accent/10 text-accent rounded-lg flex items-center justify-center shrink-0">
                     <Icon icon={topic.icon} className="text-xl" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <span className="text-base font-semibold text-slate-900 block">{topic.title}</span>
+                    <span className="text-base font-semibold text-heading block">{topic.title}</span>
                     {openIndex !== index && (
-                      <span className="text-sm text-slate-500 line-clamp-1">{topic.intro}</span>
+                      <span className="text-sm text-body line-clamp-1">{topic.intro}</span>
                     )}
                   </div>
                   <Icon
                     icon={openIndex === index ? 'solar:alt-arrow-up-linear' : 'solar:alt-arrow-down-linear'}
-                    className="text-slate-400 text-xl shrink-0"
+                    className="text-body/70 text-xl shrink-0"
                   />
                 </button>
                 {openIndex === index && (
                   <div className="px-6 pb-6 pt-2">
-                    <p className="text-sm text-slate-500 mb-4 italic">{topic.intro}</p>
-                    <div className="text-sm text-slate-600 leading-relaxed whitespace-pre-line">
+                    <p className="text-sm text-body mb-4 italic">{topic.intro}</p>
+                    <div className="text-sm text-body leading-relaxed whitespace-pre-line">
                       {topic.content.split('\n').map((line, i) => {
                         if (line.startsWith('**') && line.endsWith('**')) {
                           const text = line.slice(2, -2);
                           return (
-                            <h3 key={i} className="text-base font-semibold text-slate-900 mt-4 mb-2">
+                            <h3 key={i} className="text-base font-semibold text-heading mt-4 mb-2">
                               {text}
                             </h3>
                           );
@@ -356,7 +356,7 @@ export default function MortgageBasicsPage() {
                           if (match) {
                             return (
                               <p key={i} className="mb-1">
-                                <strong className="text-slate-900">{match[1]}</strong>
+                                <strong className="text-heading">{match[1]}</strong>
                                 {match[2]}
                               </p>
                             );
@@ -365,7 +365,7 @@ export default function MortgageBasicsPage() {
                         if (line.startsWith('•')) {
                           return (
                             <div key={i} className="flex items-start gap-2 ml-2 mb-1">
-                              <span className="text-indigo-400 mt-1 shrink-0">•</span>
+                              <span className="text-accent mt-1 shrink-0">•</span>
                               <span>{line.slice(2)}</span>
                             </div>
                           );

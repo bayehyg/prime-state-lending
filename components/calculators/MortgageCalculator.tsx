@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Icon } from '@iconify/react';
 import PaymentBreakdownChart from './PaymentBreakdownChart';
 import AmortizationTable from './AmortizationTable';
+import { getTaxRateByZip, getMonthlyTax } from '@/lib/wa-tax-rates';
 
 interface AmortizationRow {
   month: number;
@@ -14,16 +15,17 @@ interface AmortizationRow {
 
 export default function MortgageCalculator() {
   const [homePrice, setHomePrice] = useState(650000);
+  const [zipCode, setZipCode] = useState('');
   const [downPaymentDollar, setDownPaymentDollar] = useState(130000);
   const [downPaymentPercent, setDownPaymentPercent] = useState(20);
   const [loanTerm, setLoanTerm] = useState(30);
   const [interestRate, setInterestRate] = useState(6.125);
-  const [propertyTax, setPropertyTax] = useState(4000);
-  const [taxPeriod, setTaxPeriod] = useState<'monthly' | 'annual'>('annual');
-  const [insurance, setInsurance] = useState(1200);
-  const [insurancePeriod, setInsurancePeriod] = useState<'monthly' | 'annual'>('annual');
   const [hoaFees, setHoaFees] = useState(0);
   const [showAmortization, setShowAmortization] = useState(false);
+
+  // Zip code lookup
+  const zipValid = /^\d{5}$/.test(zipCode);
+  const taxLookup = zipValid ? getTaxRateByZip(zipCode) : { rate: 0.0076, county: null, isEstimate: true };
 
   // Sync down payment dollar and percent
   useEffect(() => {
@@ -40,21 +42,28 @@ export default function MortgageCalculator() {
     setDownPaymentDollar(dollar);
   };
 
+  const handleZipChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value.replace(/\D/g, '').slice(0, 5);
+    setZipCode(val);
+  };
+
   // Calculate loan amount
   const loanAmount = homePrice - downPaymentDollar;
   const ltv = (loanAmount / homePrice) * 100;
 
-  // Calculate PMI (0.85% annually when LTV > 80%)
-  const pmiMonthly = ltv > 80 ? (loanAmount * 0.0085) / 12 : 0;
+  // Calculate PMI (0.8% annually when LTV > 80%)
+  const pmiMonthly = ltv > 80 ? (loanAmount * 0.008) / 12 : 0;
 
   // Calculate monthly P&I using amortization formula
   const monthlyRate = interestRate / 100 / 12;
   const numPayments = loanTerm * 12;
   const monthlyPI = loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) / (Math.pow(1 + monthlyRate, numPayments) - 1);
 
-  // Convert tax and insurance to monthly
-  const taxMonthly = taxPeriod === 'annual' ? propertyTax / 12 : propertyTax;
-  const insuranceMonthly = insurancePeriod === 'annual' ? insurance / 12 : insurance;
+  // Property tax from zip lookup
+  const taxMonthly = (homePrice * taxLookup.rate) / 12;
+
+  // Insurance estimate (~0.6% annually, WA average)
+  const insuranceMonthly = (homePrice * 0.006) / 12;
 
   // Total monthly payment
   const totalMonthly = monthlyPI + taxMonthly + insuranceMonthly + hoaFees + pmiMonthly;
@@ -87,68 +96,70 @@ export default function MortgageCalculator() {
   const amortizationSchedule = generateAmortization();
 
   return (
-    <div className="space-y-8">
-      {/* Inputs Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div className="flex flex-col lg:flex-row gap-6">
+      {/* Inputs */}
+      <div className="lg:w-1/2 grid grid-cols-1 sm:grid-cols-2 gap-4">
         {/* Home Price */}
         <div>
-          <label className="block text-xs font-medium text-slate-500 mb-2 uppercase tracking-wide">Home Price</label>
+          <label className="block text-xs font-medium text-body mb-2 uppercase tracking-wide">Home Price</label>
           <div className="relative">
-            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm">$</span>
+            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-body/70 text-sm">$</span>
             <input
               type="number"
               value={homePrice}
               onChange={(e) => setHomePrice(Number(e.target.value))}
-              className="w-full h-11 border border-slate-200 rounded-lg px-8 text-slate-900 text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full h-11 border border-edge rounded-lg px-8 text-heading text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-accent"
             />
           </div>
+        </div>
+
+        {/* Property Zip Code */}
+        <div>
+          <label className="block text-xs font-medium text-body mb-2 uppercase tracking-wide">Property Zip Code</label>
+          <input
+            type="text"
+            inputMode="numeric"
+            maxLength={5}
+            value={zipCode}
+            onChange={handleZipChange}
+            placeholder="e.g. 98043"
+            className="w-full h-11 border border-edge rounded-lg px-4 text-heading text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-accent placeholder:text-body/40"
+          />
+          {zipValid && !taxLookup.isEstimate && (
+            <p className="mt-1 text-xs text-accent">
+              Using {taxLookup.county} County rate ({(taxLookup.rate * 100).toFixed(2)}%)
+            </p>
+          )}
+          {(!zipValid || taxLookup.isEstimate) && (
+            <p className="mt-1 text-xs text-body/60">
+              {zipCode.length === 5 && taxLookup.isEstimate
+                ? 'Zip not found — using WA state average rate (0.76%)'
+                : 'Using WA state average rate (0.76%). Enter your zip for a local estimate.'}
+            </p>
+          )}
         </div>
 
         {/* Down Payment Dollar */}
         <div>
-          <label className="block text-xs font-medium text-slate-500 mb-2 uppercase tracking-wide">Down Payment ($)</label>
+          <label className="block text-xs font-medium text-body mb-2 uppercase tracking-wide">Down Payment ($)</label>
           <div className="relative">
-            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm">$</span>
+            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-body/70 text-sm">$</span>
             <input
               type="number"
               value={downPaymentDollar}
               onChange={(e) => handleDollarChange(Number(e.target.value))}
-              className="w-full h-11 border border-slate-200 rounded-lg px-8 text-slate-900 text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full h-11 border border-edge rounded-lg px-8 text-heading text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-accent"
             />
-          </div>
-        </div>
-
-        {/* Down Payment Percent Slider */}
-        <div className="md:col-span-2">
-          <div className="flex justify-between items-center mb-2">
-            <label className="block text-xs font-medium text-slate-500 uppercase tracking-wide">Down Payment</label>
-            <span className="text-sm font-medium text-indigo-600">{downPaymentPercent.toFixed(1)}%</span>
-          </div>
-          <input
-            type="range"
-            min="0"
-            max="100"
-            step="0.5"
-            value={downPaymentPercent}
-            onChange={(e) => handlePercentChange(Number(e.target.value))}
-            className="w-full h-1.5 bg-slate-100 rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:border [&::-webkit-slider-thumb]:border-slate-200 [&::-webkit-slider-thumb]:shadow-sm [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:hover:border-indigo-400 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-white [&::-moz-range-thumb]:border [&::-moz-range-thumb]:border-slate-200 [&::-moz-range-thumb]:shadow-sm [&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:hover:border-indigo-400"
-            style={{
-              background: `linear-gradient(to right, rgb(79 70 229) 0%, rgb(79 70 229) ${downPaymentPercent}%, rgb(241 245 249) ${downPaymentPercent}%, rgb(241 245 249) 100%)`
-            }}
-          />
-          <div className="flex justify-between mt-2 text-xs text-slate-400">
-            <span>$0</span>
-            <span>${homePrice.toLocaleString()}</span>
           </div>
         </div>
 
         {/* Loan Term */}
         <div>
-          <label className="block text-xs font-medium text-slate-500 mb-2 uppercase tracking-wide">Loan Term</label>
+          <label className="block text-xs font-medium text-body mb-2 uppercase tracking-wide">Loan Term</label>
           <select
             value={loanTerm}
             onChange={(e) => setLoanTerm(Number(e.target.value))}
-            className="w-full h-11 border border-slate-200 rounded-lg px-4 text-slate-900 text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full h-11 border border-edge rounded-lg px-4 text-heading text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-accent"
           >
             <option value={30}>30-Year Fixed</option>
             <option value={20}>20-Year Fixed</option>
@@ -159,126 +170,64 @@ export default function MortgageCalculator() {
           </select>
         </div>
 
+        {/* Down Payment Percent Slider */}
+        <div className="sm:col-span-2">
+          <div className="flex justify-between items-center mb-2">
+            <label className="block text-xs font-medium text-body uppercase tracking-wide">Down Payment</label>
+            <span className="text-sm font-medium text-accent">{downPaymentPercent.toFixed(1)}%</span>
+          </div>
+          <input
+            type="range"
+            min="0"
+            max="100"
+            step="0.5"
+            value={downPaymentPercent}
+            onChange={(e) => handlePercentChange(Number(e.target.value))}
+            className="w-full h-1.5 bg-surface rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:border [&::-webkit-slider-thumb]:border-edge [&::-webkit-slider-thumb]:shadow-sm [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:hover:border-accent/50 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-white [&::-moz-range-thumb]:border [&::-moz-range-thumb]:border-edge [&::-moz-range-thumb]:shadow-sm [&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:hover:border-accent/50"
+            style={{
+              background: `linear-gradient(to right, #B79D2F 0%, #B79D2F ${downPaymentPercent}%, #E0E3E8 ${downPaymentPercent}%, #E0E3E8 100%)`
+            }}
+          />
+          <div className="flex justify-between mt-2 text-xs text-body/70">
+            <span>$0</span>
+            <span>${homePrice.toLocaleString()}</span>
+          </div>
+        </div>
+
         {/* Interest Rate */}
         <div>
-          <label className="block text-xs font-medium text-slate-500 mb-2 uppercase tracking-wide">Interest Rate (%)</label>
+          <label className="block text-xs font-medium text-body mb-2 uppercase tracking-wide">Interest Rate (%)</label>
           <input
             type="number"
             step="0.001"
             value={interestRate}
             onChange={(e) => setInterestRate(Number(e.target.value))}
-            className="w-full h-11 border border-slate-200 rounded-lg px-4 text-slate-900 text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full h-11 border border-edge rounded-lg px-4 text-heading text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-accent"
           />
         </div>
 
-        {/* Property Tax */}
-        <div>
-          <div className="flex justify-between items-center mb-2">
-            <label className="block text-xs font-medium text-slate-500 uppercase tracking-wide">Property Tax</label>
-            <div className="flex gap-1 text-xs">
-              <button
-                onClick={() => setTaxPeriod('monthly')}
-                className={`px-2 py-1 rounded ${taxPeriod === 'monthly' ? 'bg-indigo-100 text-indigo-700' : 'text-slate-500'}`}
-              >
-                Monthly
-              </button>
-              <button
-                onClick={() => setTaxPeriod('annual')}
-                className={`px-2 py-1 rounded ${taxPeriod === 'annual' ? 'bg-indigo-100 text-indigo-700' : 'text-slate-500'}`}
-              >
-                Annual
-              </button>
-            </div>
-          </div>
-          <div className="relative">
-            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm">$</span>
-            <input
-              type="number"
-              value={propertyTax}
-              onChange={(e) => setPropertyTax(Number(e.target.value))}
-              className="w-full h-11 border border-slate-200 rounded-lg px-8 text-slate-900 text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
-          </div>
-        </div>
-
-        {/* Insurance */}
-        <div>
-          <div className="flex justify-between items-center mb-2">
-            <label className="block text-xs font-medium text-slate-500 uppercase tracking-wide">Homeowner's Insurance</label>
-            <div className="flex gap-1 text-xs">
-              <button
-                onClick={() => setInsurancePeriod('monthly')}
-                className={`px-2 py-1 rounded ${insurancePeriod === 'monthly' ? 'bg-indigo-100 text-indigo-700' : 'text-slate-500'}`}
-              >
-                Monthly
-              </button>
-              <button
-                onClick={() => setInsurancePeriod('annual')}
-                className={`px-2 py-1 rounded ${insurancePeriod === 'annual' ? 'bg-indigo-100 text-indigo-700' : 'text-slate-500'}`}
-              >
-                Annual
-              </button>
-            </div>
-          </div>
-          <div className="relative">
-            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm">$</span>
-            <input
-              type="number"
-              value={insurance}
-              onChange={(e) => setInsurance(Number(e.target.value))}
-              className="w-full h-11 border border-slate-200 rounded-lg px-8 text-slate-900 text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
-          </div>
-        </div>
-
         {/* HOA Fees */}
-        <div className="md:col-span-2">
-          <label className="block text-xs font-medium text-slate-500 mb-2 uppercase tracking-wide">HOA Fees (Monthly)</label>
+        <div>
+          <label className="block text-xs font-medium text-body mb-2 uppercase tracking-wide">HOA Fees (Monthly)</label>
           <div className="relative">
-            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm">$</span>
+            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-body/70 text-sm">$</span>
             <input
               type="number"
               value={hoaFees}
               onChange={(e) => setHoaFees(Number(e.target.value))}
-              className="w-full h-11 border border-slate-200 rounded-lg px-8 text-slate-900 text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full h-11 border border-edge rounded-lg px-8 text-heading text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-accent"
             />
           </div>
         </div>
       </div>
 
       {/* Results */}
-      <div className="bg-white border border-slate-200 rounded-2xl p-8">
-        <div className="mb-8">
-          <h3 className="text-sm font-medium text-slate-500 mb-2">Monthly Payment</h3>
-          <div className="text-5xl font-semibold tracking-tight text-slate-900">
+      <div className="lg:w-1/2 bg-white border border-edge rounded-2xl p-6 flex flex-col">
+        <div className="mb-4">
+          <h3 className="text-sm font-medium text-body mb-1">Monthly Payment</h3>
+          <div className="text-4xl font-semibold tracking-tight text-heading">
             ${totalMonthly.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </div>
-        </div>
-
-        {/* Breakdown */}
-        <div className="space-y-3 mb-8">
-          <div className="flex justify-between items-center py-2 border-b border-slate-100">
-            <span className="text-sm text-slate-600">Principal &amp; Interest</span>
-            <span className="text-sm font-medium text-slate-900">${monthlyPI.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
-          </div>
-          <div className="flex justify-between items-center py-2 border-b border-slate-100">
-            <span className="text-sm text-slate-600">Property Tax</span>
-            <span className="text-sm font-medium text-slate-900">${taxMonthly.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
-          </div>
-          <div className="flex justify-between items-center py-2 border-b border-slate-100">
-            <span className="text-sm text-slate-600">Homeowner's Insurance</span>
-            <span className="text-sm font-medium text-slate-900">${insuranceMonthly.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
-          </div>
-          <div className="flex justify-between items-center py-2 border-b border-slate-100">
-            <span className="text-sm text-slate-600">HOA Fees</span>
-            <span className="text-sm font-medium text-slate-900">${hoaFees.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
-          </div>
-          {ltv > 80 && (
-            <div className="flex justify-between items-center py-2 border-b border-slate-100">
-              <span className="text-sm text-slate-600">PMI (LTV {ltv.toFixed(1)}%)</span>
-              <span className="text-sm font-medium text-slate-900">${pmiMonthly.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
-            </div>
-          )}
         </div>
 
         {/* Chart */}
@@ -290,29 +239,64 @@ export default function MortgageCalculator() {
           pmi={pmiMonthly}
         />
 
+        {/* Breakdown */}
+        <div className="space-y-2 mt-4">
+          <div className="flex justify-between items-center py-1.5 border-b border-edge/50">
+            <span className="text-sm text-body">Principal &amp; Interest</span>
+            <span className="text-sm font-medium text-heading">${monthlyPI.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+          </div>
+          <div className="flex justify-between items-center py-1.5 border-b border-edge/50">
+            <span className="text-sm text-body">
+              Est. Property Tax{!taxLookup.isEstimate && taxLookup.county ? ` (${taxLookup.county} Co.)` : ''}
+            </span>
+            <span className="text-sm font-medium text-heading">${taxMonthly.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+          </div>
+          <div className="flex justify-between items-center py-1.5 border-b border-edge/50">
+            <span className="text-sm text-body">Est. Home Insurance</span>
+            <span className="text-sm font-medium text-heading">${insuranceMonthly.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+          </div>
+          <div className="flex justify-between items-center py-1.5 border-b border-edge/50">
+            <span className="text-sm text-body">HOA Fees</span>
+            <span className="text-sm font-medium text-heading">${hoaFees.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+          </div>
+          {ltv > 80 && (
+            <div className="flex justify-between items-center py-1.5 border-b border-edge/50">
+              <span className="text-sm text-body">PMI (LTV {ltv.toFixed(1)}%)</span>
+              <span className="text-sm font-medium text-heading">${pmiMonthly.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+            </div>
+          )}
+        </div>
+
+        {/* Disclaimer */}
+        <p className="mt-3 text-xs text-body/60 leading-relaxed">
+          {!taxLookup.isEstimate && taxLookup.county
+            ? `Property tax estimate based on ${taxLookup.county} County average effective rate (${(taxLookup.rate * 100).toFixed(2)}%). Actual taxes vary based on assessed value, exemptions, and local levies. Insurance estimate based on WA state average. Not a commitment to lend.`
+            : 'Property tax based on WA state average (0.76%). Enter your zip code for a local estimate. Insurance estimate based on WA state average. Not a commitment to lend.'}
+        </p>
+
         {/* Summary Stats */}
-        <div className="grid grid-cols-2 gap-4 mt-8 pt-8 border-t border-slate-100">
+        <div className="grid grid-cols-2 gap-4 mt-4 pt-4 border-t border-edge/50">
           <div>
-            <span className="block text-xs text-slate-500 mb-1">Total Interest Paid</span>
-            <span className="text-xl font-semibold text-slate-900">${totalInterest.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+            <span className="block text-xs text-body mb-1">Total Interest Paid</span>
+            <span className="text-lg font-semibold text-heading">${totalInterest.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
           </div>
           <div>
-            <span className="block text-xs text-slate-500 mb-1">Total Cost of Loan</span>
-            <span className="text-xl font-semibold text-slate-900">${totalCost.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+            <span className="block text-xs text-body mb-1">Total Cost of Loan</span>
+            <span className="text-lg font-semibold text-heading">${totalCost.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
           </div>
         </div>
 
         {/* Amortization Toggle */}
         <button
           onClick={() => setShowAmortization(!showAmortization)}
-          className="mt-6 w-full h-11 px-6 inline-flex items-center justify-center rounded-lg bg-slate-50 border border-slate-200 text-slate-700 text-sm font-medium hover:bg-slate-100 transition-colors"
+          className="mt-4 w-full h-10 px-6 inline-flex items-center justify-center rounded-lg bg-surface border border-edge text-body text-sm font-medium hover:bg-surface transition-colors"
         >
           <Icon icon={showAmortization ? "solar:alt-arrow-up-linear" : "solar:alt-arrow-down-linear"} className="mr-2" />
           {showAmortization ? 'Hide' : 'Show'} Amortization Schedule
         </button>
 
         {showAmortization && (
-          <div className="mt-6">
+          <div className="mt-4">
             <AmortizationTable schedule={amortizationSchedule} />
           </div>
         )}

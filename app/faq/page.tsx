@@ -148,20 +148,20 @@ function FAQAccordion({ faqs, startIndex = 0 }: { faqs: typeof liveFaqs; startIn
   return (
     <div className="space-y-4">
       {faqs.map((faq, index) => (
-        <div key={index} className="bg-white border border-slate-200 rounded-xl overflow-hidden">
+        <div key={index} className="bg-white border border-edge rounded-xl overflow-hidden">
           <button
             onClick={() => setOpenIndex(openIndex === index ? null : index)}
-            className="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-slate-50 transition-colors"
+            className="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-surface transition-colors"
           >
-            <span className="text-base font-semibold text-slate-900 pr-4">{faq.question}</span>
+            <span className="text-base font-semibold text-heading pr-4">{faq.question}</span>
             <Icon
               icon={openIndex === index ? 'solar:alt-arrow-up-linear' : 'solar:alt-arrow-down-linear'}
-              className="text-slate-400 text-xl shrink-0"
+              className="text-body/70 text-xl shrink-0"
             />
           </button>
           {openIndex === index && (
             <div className="px-6 pb-5 pt-2">
-              <div className="text-sm text-slate-600 leading-relaxed whitespace-pre-line">
+              <div className="text-sm text-body leading-relaxed whitespace-pre-line">
                 {faq.answer}
               </div>
             </div>
@@ -179,10 +179,10 @@ export default function FAQPage() {
       <main className="pt-24 pb-20 min-h-screen">
         <div className="max-w-3xl mx-auto px-6">
           <div className="text-center mb-16">
-            <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight text-slate-900 mb-4">
+            <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight text-heading mb-4">
               Frequently Asked Questions
             </h1>
-            <p className="text-lg text-slate-500">
+            <p className="text-lg text-body">
               Everything you need to know about mortgages with Prime State Lending.
             </p>
           </div>
@@ -190,16 +190,16 @@ export default function FAQPage() {
           <FAQAccordion faqs={liveFaqs} />
 
           <div className="mt-16 mb-8">
-            <h2 className="text-2xl font-semibold tracking-tight text-slate-900 mb-6 text-center">
+            <h2 className="text-2xl font-semibold tracking-tight text-heading mb-6 text-center">
               More Questions
             </h2>
             <FAQAccordion faqs={additionalFaqs} startIndex={liveFaqs.length} />
           </div>
 
-          <div className="mt-16 bg-slate-900 text-white rounded-2xl p-8 text-center">
+          <div className="mt-16 bg-nav text-white rounded-2xl p-8 text-center">
             <h2 className="text-2xl font-semibold tracking-tight mb-4">Still have questions?</h2>
-            <p className="text-slate-400 mb-6">Our team is here to help you navigate the mortgage process.</p>
-            <Link href="/contact" className="h-11 px-6 inline-flex items-center justify-center rounded-lg bg-white text-slate-900 text-sm font-medium hover:bg-slate-50 transition-colors">
+            <p className="text-white/60 mb-6">Our team is here to help you navigate the mortgage process.</p>
+            <Link href="/contact" className="h-11 px-6 inline-flex items-center justify-center rounded-lg bg-white text-heading text-sm font-medium hover:bg-surface transition-colors">
               Contact Us
             </Link>
           </div>

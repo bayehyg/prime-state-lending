@@ -317,7 +317,7 @@ function HomeEquityContent() {
   return (
     <>
       <p>A home equity loan allows you to borrow against the equity you have built up in your home. These loans can be used for home improvements, debt consolidation, and other major expenses.</p>
-      <p className="text-slate-400 italic">Contact us to learn more about our home equity loan options.</p>
+      <p className="text-body/70 italic">Contact us to learn more about our home equity loan options.</p>
     </>
   );
 }
@@ -326,7 +326,7 @@ function ReverseMortgageContent() {
   return (
     <>
       <p>A reverse mortgage is a loan available to homeowners 62 years or older that allows them to convert part of the equity in their home into cash without having to sell their home or pay additional monthly bills.</p>
-      <p className="text-slate-400 italic">Contact us to learn more about our reverse mortgage options.</p>
+      <p className="text-body/70 italic">Contact us to learn more about our reverse mortgage options.</p>
     </>
   );
 }
@@ -358,30 +358,30 @@ export default function LoanProgramsPage() {
       <main className="pt-24 pb-20 min-h-screen">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16">
-            <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight text-slate-900 mb-4">
+            <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight text-heading mb-4">
               Which Mortgage is Right for You?
             </h1>
-            <p className="text-lg text-slate-500 max-w-2xl mx-auto">
+            <p className="text-lg text-body max-w-2xl mx-auto">
               Explore our mortgage rate options and loan programs to find the best fit for your needs.
             </p>
           </div>
 
           {/* Rate-Based Mortgage Types */}
           <div className="mb-16">
-            <h2 className="text-2xl font-semibold tracking-tight text-slate-900 mb-8 text-center">
+            <h2 className="text-2xl font-semibold tracking-tight text-heading mb-8 text-center">
               Mortgage Rate Options
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
               {rateTypes.map((item) => (
-                <div key={item.title} className="bg-white border border-slate-200 rounded-2xl p-8">
-                  <div className="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center mb-6">
+                <div key={item.title} className="bg-white border border-edge rounded-2xl p-8">
+                  <div className="w-12 h-12 bg-accent/10 text-accent rounded-xl flex items-center justify-center mb-6">
                     <Icon icon={item.icon} className="text-2xl" />
                   </div>
-                  <h3 className="text-2xl font-semibold tracking-tight text-slate-900 mb-3">{item.title}</h3>
-                  <p className="text-sm text-slate-500 leading-relaxed mb-6">{item.description}</p>
+                  <h3 className="text-2xl font-semibold tracking-tight text-heading mb-3">{item.title}</h3>
+                  <p className="text-sm text-body leading-relaxed mb-6">{item.description}</p>
                   <button
                     onClick={() => openModal(item.modalKey)}
-                    className="text-sm font-medium text-indigo-600 flex items-center gap-1 hover:gap-2 transition-all cursor-pointer"
+                    className="text-sm font-medium text-accent flex items-center gap-1 hover:gap-2 transition-all cursor-pointer"
                   >
                     Learn More <Icon icon="solar:arrow-right-linear" />
                   </button>
@@ -392,19 +392,19 @@ export default function LoanProgramsPage() {
 
           {/* Loan Programs */}
           <div>
-            <h2 className="text-2xl font-semibold tracking-tight text-slate-900 mb-8 text-center">
+            <h2 className="text-2xl font-semibold tracking-tight text-heading mb-8 text-center">
               Loan Programs
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
               {loanPrograms.map((item) =>
                 item.featured ? (
-                  <div key={item.title} className="bg-indigo-900 rounded-2xl p-8 text-white relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-800 rounded-full blur-2xl opacity-50"></div>
-                    <div className="w-12 h-12 bg-indigo-800 text-white rounded-xl flex items-center justify-center mb-6 relative z-10">
+                  <div key={item.title} className="bg-nav rounded-2xl p-8 text-white relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-footer rounded-full blur-2xl opacity-50"></div>
+                    <div className="w-12 h-12 bg-footer text-white rounded-xl flex items-center justify-center mb-6 relative z-10">
                       <Icon icon={item.icon} className="text-2xl" />
                     </div>
                     <h3 className="text-2xl font-semibold tracking-tight mb-3 relative z-10">{item.title}</h3>
-                    <p className="text-sm text-indigo-200 leading-relaxed mb-6 relative z-10">{item.description}</p>
+                    <p className="text-sm text-white/60 leading-relaxed mb-6 relative z-10">{item.description}</p>
                     <button
                       onClick={() => openModal(item.modalKey)}
                       className="text-sm font-medium text-white flex items-center gap-1 hover:gap-2 transition-all relative z-10 cursor-pointer"
@@ -413,15 +413,15 @@ export default function LoanProgramsPage() {
                     </button>
                   </div>
                 ) : (
-                  <div key={item.title} className="bg-white border border-slate-200 rounded-2xl p-8">
-                    <div className="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center mb-6">
+                  <div key={item.title} className="bg-white border border-edge rounded-2xl p-8">
+                    <div className="w-12 h-12 bg-accent/10 text-accent rounded-xl flex items-center justify-center mb-6">
                       <Icon icon={item.icon} className="text-2xl" />
                     </div>
-                    <h3 className="text-2xl font-semibold tracking-tight text-slate-900 mb-3">{item.title}</h3>
-                    <p className="text-sm text-slate-500 leading-relaxed mb-6">{item.description}</p>
+                    <h3 className="text-2xl font-semibold tracking-tight text-heading mb-3">{item.title}</h3>
+                    <p className="text-sm text-body leading-relaxed mb-6">{item.description}</p>
                     <button
                       onClick={() => openModal(item.modalKey)}
-                      className="text-sm font-medium text-indigo-600 flex items-center gap-1 hover:gap-2 transition-all cursor-pointer"
+                      className="text-sm font-medium text-accent flex items-center gap-1 hover:gap-2 transition-all cursor-pointer"
                     >
                       Get Started <Icon icon="solar:arrow-right-linear" />
                     </button>

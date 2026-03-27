@@ -15,6 +15,7 @@ export interface MortgageState {
   income: Income
   hasDebts: boolean | null
   debtAmount: DebtAmount
+  zipCode: string
   name: string
   email: string
   phone: string
@@ -38,6 +39,7 @@ const initialState: MortgageState = {
   income: '',
   hasDebts: null,
   debtAmount: '',
+  zipCode: '',
   name: '',
   email: '',
   phone: '',

@@ -14,6 +14,7 @@ import {
   type Income,
   type DebtAmount,
 } from '@/store/mortgageStore'
+import { getTaxRateByZip } from '@/lib/wa-tax-rates'
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -88,8 +89,8 @@ function OptionCard({
       className={[
         'w-full min-h-14 px-5 py-4 rounded-xl border text-left transition-all duration-150 cursor-pointer',
         selected
-          ? 'border-indigo-600 bg-indigo-50 ring-2 ring-indigo-600'
-          : 'border-slate-200 bg-white hover:border-indigo-300 hover:bg-slate-50',
+          ? 'border-accent bg-accent/10 ring-2 ring-accent'
+          : 'border-edge bg-white hover:border-accent/40 hover:bg-surface',
         className,
       ].join(' ')}
     >
@@ -101,8 +102,8 @@ function OptionCard({
 function QuestionHeader({ question, helper }: { question: string; helper?: string }) {
   return (
     <div className="mb-8">
-      <h2 className="text-2xl font-semibold tracking-tight text-slate-900 mb-2">{question}</h2>
-      {helper && <p className="text-sm text-slate-500">{helper}</p>}
+      <h2 className="text-2xl font-semibold tracking-tight text-heading mb-2">{question}</h2>
+      {helper && <p className="text-sm text-body">{helper}</p>}
     </div>
   )
 }
@@ -113,7 +114,7 @@ function NextBtn({ onClick, disabled = false }: { onClick: () => void; disabled?
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className="mt-6 w-full h-12 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-40 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors"
+      className="mt-6 w-full h-12 bg-accent hover:bg-accent-hover disabled:opacity-40 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors"
     >
       Next →
     </button>
@@ -143,7 +144,7 @@ function Step1({ onAutoAdvance }: { onAutoAdvance: () => void }) {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         {options.map(({ value, label }) => (
           <OptionCard key={value} selected={intent === value} onClick={() => handleSelect(value)}>
-            <span className="text-sm font-medium text-slate-900">{label}</span>
+            <span className="text-sm font-medium text-heading">{label}</span>
           </OptionCard>
         ))}
       </div>
@@ -154,8 +155,13 @@ function Step1({ onAutoAdvance }: { onAutoAdvance: () => void }) {
 // ─── Step 2 — Home Price ──────────────────────────────────────────────────────
 
 function Step2({ onNext }: { onNext: () => void }) {
-  const { homePrice, setField } = useMortgageStore()
+  const { homePrice, zipCode, setField } = useMortgageStore()
   const quickPicks = [250_000, 350_000, 500_000, 750_000, 1_000_000]
+
+  function handleZipChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const val = e.target.value.replace(/\D/g, '').slice(0, 5)
+    setField('zipCode', val)
+  }
 
   return (
     <div>
@@ -165,7 +171,7 @@ function Step2({ onNext }: { onNext: () => void }) {
       />
 
       <div className="text-center mb-6">
-        <span className="text-4xl font-bold tracking-tight text-slate-900">{fmt(homePrice)}</span>
+        <span className="text-4xl font-bold tracking-tight text-heading">{fmt(homePrice)}</span>
       </div>
 
       <input
@@ -175,10 +181,10 @@ function Step2({ onNext }: { onNext: () => void }) {
         step={5_000}
         value={homePrice}
         onChange={(e) => setField('homePrice', Number(e.target.value))}
-        className="w-full accent-indigo-600 cursor-pointer"
+        className="w-full accent-accent cursor-pointer"
       />
 
-      <div className="flex justify-between text-xs text-slate-400 mt-1 mb-6">
+      <div className="flex justify-between text-xs text-body/70 mt-1 mb-6">
         <span>$50k</span>
         <span>$1.5M</span>
       </div>
@@ -192,13 +198,28 @@ function Step2({ onNext }: { onNext: () => void }) {
             className={[
               'flex-1 min-w-0 h-9 rounded-lg text-sm font-medium border transition-all',
               homePrice === p
-                ? 'border-indigo-600 bg-indigo-50 text-indigo-700 ring-2 ring-indigo-600'
-                : 'border-slate-200 text-slate-600 hover:border-indigo-300',
+                ? 'border-accent bg-accent/10 text-accent-hover ring-2 ring-accent'
+                : 'border-edge text-body hover:border-accent/40',
             ].join(' ')}
           >
             {fmtCompact(p)}
           </button>
         ))}
+      </div>
+
+      {/* Zip code field */}
+      <div className="mt-4 mb-2">
+        <label className="block text-sm font-medium text-body mb-1.5">Property zip code (optional)</label>
+        <input
+          type="text"
+          inputMode="numeric"
+          maxLength={5}
+          value={zipCode}
+          onChange={handleZipChange}
+          placeholder="e.g. 98043"
+          className="w-full h-11 border border-edge rounded-lg px-4 text-heading text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-accent placeholder:text-body/40"
+        />
+        <p className="mt-1 text-xs text-body/60">Helps us estimate your property tax</p>
       </div>
 
       <NextBtn onClick={onNext} />
@@ -245,8 +266,8 @@ function Step3({ onAutoAdvance }: { onAutoAdvance: () => void }) {
             className={[
               'h-12 rounded-lg text-sm font-medium border transition-all',
               downPaymentPercent === p && !custom
-                ? 'border-indigo-600 bg-indigo-50 text-indigo-700 ring-2 ring-indigo-600'
-                : 'border-slate-200 text-slate-700 hover:border-indigo-300',
+                ? 'border-accent bg-accent/10 text-accent-hover ring-2 ring-accent'
+                : 'border-edge text-body hover:border-accent/40',
             ].join(' ')}
           >
             {p}%
@@ -258,8 +279,8 @@ function Step3({ onAutoAdvance }: { onAutoAdvance: () => void }) {
           className={[
             'h-12 rounded-lg text-sm font-medium border transition-all',
             custom
-              ? 'border-indigo-600 bg-indigo-50 text-indigo-700 ring-2 ring-indigo-600'
-              : 'border-slate-200 text-slate-700 hover:border-indigo-300',
+              ? 'border-accent bg-accent/10 text-accent-hover ring-2 ring-accent'
+              : 'border-edge text-body hover:border-accent/40',
           ].join(' ')}
         >
           Custom
@@ -279,15 +300,15 @@ function Step3({ onAutoAdvance }: { onAutoAdvance: () => void }) {
               onChange={handleCustomChange}
               placeholder="Enter %"
               autoFocus
-              className="w-full h-12 border border-slate-200 rounded-lg px-4 pr-10 text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600"
+              className="w-full h-12 border border-edge rounded-lg px-4 pr-10 text-heading focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent"
             />
-            <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm">%</span>
+            <span className="absolute right-4 top-1/2 -translate-y-1/2 text-body/70 text-sm">%</span>
           </div>
         </motion.div>
       )}
 
-      <div className="bg-slate-50 rounded-lg px-4 py-3 text-sm text-slate-600 mb-4">
-        Down payment amount: <span className="font-semibold text-slate-900">{fmt(dollarAmount)}</span>
+      <div className="bg-surface rounded-lg px-4 py-3 text-sm text-body mb-4">
+        Down payment amount: <span className="font-semibold text-heading">{fmt(dollarAmount)}</span>
       </div>
 
       {custom && <NextBtn onClick={onAutoAdvance} />}
@@ -320,8 +341,8 @@ function Step4({ onAutoAdvance }: { onAutoAdvance: () => void }) {
         {options.map(({ value, label, sub }) => (
           <OptionCard key={value} selected={creditScore === value} onClick={() => handleSelect(value)}>
             <div className="flex items-center justify-between">
-              <span className="text-sm font-semibold text-slate-900">{label}</span>
-              <span className="text-xs text-slate-500">{sub}</span>
+              <span className="text-sm font-semibold text-heading">{label}</span>
+              <span className="text-xs text-body">{sub}</span>
             </div>
           </OptionCard>
         ))}
@@ -360,8 +381,8 @@ function Step5({ onAutoAdvance }: { onAutoAdvance: () => void }) {
         {options.map(({ value, label, sub }) => (
           <OptionCard key={value} selected={timeline === value} onClick={() => handleSelect(value)}>
             <div>
-              <p className="text-sm font-semibold text-slate-900">{label}</p>
-              <p className="text-xs text-slate-500 mt-0.5">{sub}</p>
+              <p className="text-sm font-semibold text-heading">{label}</p>
+              <p className="text-xs text-body mt-0.5">{sub}</p>
             </div>
           </OptionCard>
         ))}
@@ -373,10 +394,10 @@ function Step5({ onAutoAdvance }: { onAutoAdvance: () => void }) {
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
-            className="mt-5 bg-indigo-50 border border-indigo-200 rounded-xl px-5 py-4"
+            className="mt-5 bg-accent/10 border border-accent/30 rounded-xl px-5 py-4"
           >
-            <p className="text-sm text-indigo-800 font-medium">No pressure at all.</p>
-            <p className="text-sm text-indigo-600 mt-1">
+            <p className="text-sm text-accent-hover font-medium">No pressure at all.</p>
+            <p className="text-sm text-accent mt-1">
               We'll still show you an estimate so you know what to expect when the time is right.
             </p>
           </motion.div>
@@ -389,19 +410,32 @@ function Step5({ onAutoAdvance }: { onAutoAdvance: () => void }) {
 // ─── Step 6 — Results ─────────────────────────────────────────────────────────
 
 function Step6({ onNext }: { onNext: () => void }) {
-  const { homePrice, downPaymentPercent, creditScore } = useMortgageStore()
+  const { homePrice, downPaymentPercent, creditScore, zipCode } = useMortgageStore()
   const [displayPayment, setDisplayPayment] = useState(0)
 
   const downDollars = Math.round((homePrice * downPaymentPercent) / 100)
   const loanAmount = homePrice - downDollars
-  const monthlyPayment = Math.round(calcMonthlyPayment(loanAmount, creditScore))
+  const monthlyPI = Math.round(calcMonthlyPayment(loanAmount, creditScore))
   const rateRange = RATE_RANGE_MAP[creditScore] || '7.0% – 7.8%'
+
+  // Property tax from zip lookup
+  const zipValid = /^\d{5}$/.test(zipCode)
+  const taxLookup = zipValid ? getTaxRateByZip(zipCode) : { rate: 0.0076, county: null, isEstimate: true }
+  const monthlyTax = Math.round((homePrice * taxLookup.rate) / 12)
+
+  // Insurance estimate (~0.6% annually)
+  const monthlyInsurance = Math.round((homePrice * 0.006) / 12)
+
+  // PMI if down payment < 20%
+  const monthlyPMI = downPaymentPercent < 20 ? Math.round((loanAmount * 0.008) / 12) : 0
+
+  const totalMonthly = monthlyPI + monthlyTax + monthlyInsurance + monthlyPMI
 
   useEffect(() => {
     setDisplayPayment(0)
     const start = Date.now()
     const duration = 1400
-    const end = monthlyPayment
+    const end = totalMonthly
 
     const id = setInterval(() => {
       const elapsed = Date.now() - start
@@ -412,51 +446,57 @@ function Step6({ onNext }: { onNext: () => void }) {
     }, 16)
 
     return () => clearInterval(id)
-  }, [monthlyPayment])
+  }, [totalMonthly])
 
   const rows = [
     { label: 'Estimated Home Price', value: fmt(homePrice) },
     { label: 'Estimated Down Payment', value: fmt(downDollars) },
     { label: 'Loan Amount', value: fmt(loanAmount) },
     { label: 'Estimated Rate Range', value: rateRange },
+    { label: 'Principal & Interest', value: fmt(monthlyPI) + '/mo' },
+    { label: `Est. Property Tax${!taxLookup.isEstimate && taxLookup.county ? ` (${taxLookup.county} Co.)` : ''}`, value: fmt(monthlyTax) + '/mo' },
+    { label: 'Est. Home Insurance', value: fmt(monthlyInsurance) + '/mo' },
+    ...(monthlyPMI > 0 ? [{ label: 'Est. PMI', value: fmt(monthlyPMI) + '/mo' }] : []),
   ]
 
   return (
     <div>
       <div className="text-center mb-6">
-        <p className="text-sm font-medium text-indigo-600 uppercase tracking-widest mb-2">Your Estimate</p>
-        <p className="text-5xl font-bold tracking-tight text-slate-900">
+        <p className="text-sm font-medium text-accent uppercase tracking-widest mb-2">Your Estimate</p>
+        <p className="text-5xl font-bold tracking-tight text-heading">
           {fmt(displayPayment)}
-          <span className="text-xl font-normal text-slate-400">/mo</span>
+          <span className="text-xl font-normal text-body/70">/mo</span>
         </p>
-        <p className="text-sm text-slate-500 mt-2">Estimated monthly payment</p>
+        <p className="text-sm text-body mt-2">Estimated total monthly payment</p>
       </div>
 
-      <div className="bg-white border border-slate-200 rounded-2xl divide-y divide-slate-100 mb-5">
+      <div className="bg-white border border-edge rounded-2xl divide-y divide-edge/50 mb-5">
         {rows.map(({ label, value }) => (
           <div key={label} className="flex items-center justify-between px-5 py-3.5">
-            <span className="text-sm text-slate-500">{label}</span>
-            <span className="text-sm font-semibold text-slate-900">{value}</span>
+            <span className="text-sm text-body">{label}</span>
+            <span className="text-sm font-semibold text-heading">{value}</span>
           </div>
         ))}
       </div>
 
-      <p className="text-xs text-slate-400 text-center mb-6 leading-relaxed">
-        Estimates are illustrative only and not a commitment to lend. Rates shown are for
-        informational purposes.
+      <p className="text-xs text-body/70 text-center mb-6 leading-relaxed">
+        {!taxLookup.isEstimate && taxLookup.county
+          ? `Property tax based on ${taxLookup.county} County average (${(taxLookup.rate * 100).toFixed(2)}%). `
+          : 'Property tax based on WA state average (0.76%). '}
+        Estimates are illustrative only and not a commitment to lend.
       </p>
 
       <div className="flex flex-col gap-3">
         <button
           type="button"
           onClick={onNext}
-          className="w-full h-12 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg transition-colors"
+          className="w-full h-12 bg-accent hover:bg-accent-hover text-white font-medium rounded-lg transition-colors"
         >
           Get My Exact Rate →
         </button>
         <a
           href="tel:+14255825615"
-          className="w-full h-12 flex items-center justify-center border border-slate-200 hover:border-slate-300 text-slate-700 font-medium rounded-lg transition-colors text-sm"
+          className="w-full h-12 flex items-center justify-center border border-edge hover:border-edge text-body font-medium rounded-lg transition-colors text-sm"
         >
           Talk to a Loan Officer
         </a>
@@ -493,7 +533,7 @@ function Step7({ onNext }: { onNext: () => void }) {
             selected={income === value}
             onClick={() => setField('income', value)}
           >
-            <span className="text-sm font-medium text-slate-900">{label}</span>
+            <span className="text-sm font-medium text-heading">{label}</span>
           </OptionCard>
         ))}
       </div>
@@ -505,22 +545,22 @@ function Step7({ onNext }: { onNext: () => void }) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
           >
-            <div className="mb-4 pt-2 border-t border-slate-100">
-              <h3 className="text-lg font-semibold text-slate-900 mb-1">Any significant monthly debts?</h3>
-              <p className="text-sm text-slate-500 mb-5">Car payments, student loans, etc.</p>
+            <div className="mb-4 pt-2 border-t border-edge/50">
+              <h3 className="text-lg font-semibold text-heading mb-1">Any significant monthly debts?</h3>
+              <p className="text-sm text-body mb-5">Car payments, student loans, etc.</p>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
                 <OptionCard
                   selected={hasDebts === false}
                   onClick={() => { setField('hasDebts', false); setField('debtAmount', '') }}
                 >
-                  <span className="text-sm font-medium text-slate-900">No, not really</span>
+                  <span className="text-sm font-medium text-heading">No, not really</span>
                 </OptionCard>
                 <OptionCard
                   selected={hasDebts === true}
                   onClick={() => setField('hasDebts', true)}
                 >
-                  <span className="text-sm font-medium text-slate-900">Yes, some</span>
+                  <span className="text-sm font-medium text-heading">Yes, some</span>
                 </OptionCard>
               </div>
 
@@ -539,7 +579,7 @@ function Step7({ onNext }: { onNext: () => void }) {
                         selected={debtAmount === value}
                         onClick={() => setField('debtAmount', value)}
                       >
-                        <span className="text-sm font-medium text-slate-900">{label}</span>
+                        <span className="text-sm font-medium text-heading">{label}</span>
                       </OptionCard>
                     ))}
                   </motion.div>
@@ -598,6 +638,7 @@ function Step8() {
       intent: store.intent,
       homePrice: store.homePrice,
       downPaymentPercent: store.downPaymentPercent,
+      zipCode: store.zipCode,
       creditScore: store.creditScore,
       timeline: store.timeline,
       income: store.income,
@@ -623,6 +664,7 @@ function Step8() {
           intent: formData.intent,
           homePrice: formData.homePrice,
           downPaymentPercent: formData.downPaymentPercent,
+          zipCode: formData.zipCode,
           creditScore: formData.creditScore,
           timeline: formData.timeline,
           income: formData.income,
@@ -652,10 +694,10 @@ function Step8() {
   return (
     <div>
       <div className="text-center mb-8">
-        <h2 className="text-2xl font-semibold tracking-tight text-slate-900 mb-2">
+        <h2 className="text-2xl font-semibold tracking-tight text-heading mb-2">
           See your loan options
         </h2>
-        <p className="text-sm text-slate-500">
+        <p className="text-sm text-body">
           A Prime State loan officer will reach out within 1 business day — no pressure.
         </p>
       </div>
@@ -663,7 +705,7 @@ function Step8() {
       {/* Trust badges */}
       <div className="flex flex-wrap justify-center gap-x-5 gap-y-2 mb-8">
         {['🔒 No credit pull', 'No SSN required', 'Local WA lender'].map((badge) => (
-          <span key={badge} className="text-xs font-medium text-slate-500 bg-slate-100 rounded-full px-3 py-1">
+          <span key={badge} className="text-xs font-medium text-body bg-surface rounded-full px-3 py-1">
             {badge}
           </span>
         ))}
@@ -671,42 +713,42 @@ function Step8() {
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1.5">Full Name</label>
+          <label className="block text-sm font-medium text-body mb-1.5">Full Name</label>
           <input
             {...register('name')}
             placeholder="Jane Smith"
             className={[
-              'w-full h-12 border rounded-lg px-4 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600 transition-colors',
-              errors.name ? 'border-red-400 bg-red-50' : 'border-slate-200',
+              'w-full h-12 border rounded-lg px-4 text-heading placeholder-body/50 focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent transition-colors',
+              errors.name ? 'border-red-400 bg-red-50' : 'border-edge',
             ].join(' ')}
           />
           {errors.name && <p className="mt-1 text-xs text-red-600">{errors.name.message}</p>}
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1.5">Email Address</label>
+          <label className="block text-sm font-medium text-body mb-1.5">Email Address</label>
           <input
             {...register('email')}
             type="email"
             placeholder="jane@example.com"
             className={[
-              'w-full h-12 border rounded-lg px-4 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600 transition-colors',
-              errors.email ? 'border-red-400 bg-red-50' : 'border-slate-200',
+              'w-full h-12 border rounded-lg px-4 text-heading placeholder-body/50 focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent transition-colors',
+              errors.email ? 'border-red-400 bg-red-50' : 'border-edge',
             ].join(' ')}
           />
           {errors.email && <p className="mt-1 text-xs text-red-600">{errors.email.message}</p>}
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1.5">Phone Number</label>
+          <label className="block text-sm font-medium text-body mb-1.5">Phone Number</label>
           <input
             value={phoneVal}
             onChange={handlePhoneChange}
             placeholder="(206) 555-0100"
             type="tel"
             className={[
-              'w-full h-12 border rounded-lg px-4 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600 transition-colors',
-              errors.phone ? 'border-red-400 bg-red-50' : 'border-slate-200',
+              'w-full h-12 border rounded-lg px-4 text-heading placeholder-body/50 focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent transition-colors',
+              errors.phone ? 'border-red-400 bg-red-50' : 'border-edge',
             ].join(' ')}
           />
           {errors.phone && <p className="mt-1 text-xs text-red-600">{errors.phone.message}</p>}
@@ -715,7 +757,7 @@ function Step8() {
         <button
           type="submit"
           disabled={submitting}
-          className="w-full h-12 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-70 text-white font-medium rounded-lg transition-colors mt-2 flex items-center justify-center gap-2"
+          className="w-full h-12 bg-accent hover:bg-accent-hover disabled:opacity-70 text-white font-medium rounded-lg transition-colors mt-2 flex items-center justify-center gap-2"
         >
           {submitting ? (
             <>
@@ -745,14 +787,14 @@ function ProgressBar({ current, total }: { current: number; total: number }) {
   return (
     <div className="mb-8">
       <div className="flex items-center justify-between mb-2">
-        <span className="text-xs font-medium text-slate-500">
+        <span className="text-xs font-medium text-body">
           Step {current} of {total}
         </span>
-        <span className="text-xs font-medium text-indigo-600">{Math.round(pct)}% complete</span>
+        <span className="text-xs font-medium text-accent">{Math.round(pct)}% complete</span>
       </div>
-      <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+      <div className="h-1.5 bg-surface rounded-full overflow-hidden">
         <motion.div
-          className="h-full bg-indigo-600 rounded-full"
+          className="h-full bg-accent rounded-full"
           initial={false}
           animate={{ width: `${pct}%` }}
           transition={{ duration: 0.35, ease: 'easeOut' }}
@@ -799,14 +841,14 @@ export default function MortgageWizard() {
   }
 
   return (
-    <div className="bg-white border border-slate-200 rounded-2xl p-8 shadow-sm">
+    <div className="bg-white border border-edge rounded-2xl p-8 shadow-sm">
       <ProgressBar current={currentStep} total={TOTAL} />
 
       {currentStep > 1 && (
         <button
           type="button"
           onClick={prevStep}
-          className="mb-5 -ml-1 flex items-center gap-1 text-sm text-slate-400 hover:text-slate-700 transition-colors"
+          className="mb-5 -ml-1 flex items-center gap-1 text-sm text-body/70 hover:text-body transition-colors"
         >
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
             <path d="M10 12L6 8L10 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />

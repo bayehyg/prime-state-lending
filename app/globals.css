@@ -1,4 +1,17 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@theme {
+  --color-accent: #B79D2F;
+  --color-accent-hover: #9A8227;
+  --color-heading: #2C2C2C;
+  --color-body: #555555;
+  --color-surface: #F7F7F7;
+  --color-nav: #474D59;
+  --color-footer: #454C5C;
+  --color-overlay: #5E6270;
+  --color-edge: #E0E3E8;
+}
 
 :root {
   --iconify-stroke-width: 1.5;
@@ -9,15 +22,15 @@ html {
 }
 
 body {
-  background-color: rgb(248 250 252);
-  color: rgb(15 23 42);
+  background-color: #F7F7F7;
+  color: #555555;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 ::selection {
-  background-color: rgb(224 231 255);
-  color: rgb(49 46 129);
+  background-color: #B79D2F33;
+  color: #2C2C2C;
 }
 
 .hide-scrollbar::-webkit-scrollbar {

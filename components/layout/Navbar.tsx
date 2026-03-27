@@ -41,24 +41,24 @@ export default function Navbar() {
       className={`fixed top-0 inset-x-0 z-50 transition-colors duration-300 ${
         transparent
           ? 'bg-transparent border-b border-transparent'
-          : 'bg-white/80 backdrop-blur-md border-b border-slate-200/60'
+          : 'bg-nav backdrop-blur-md border-b border-nav'
       }`}
     >
       <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Link href="/" className={`text-lg font-extrabold tracking-tight flex items-center gap-2 ${transparent ? 'text-white' : 'text-indigo-600'}`} style={{ fontFamily: 'var(--font-logo)' }}>
+          <Link href="/" className={`text-lg font-extrabold tracking-tight flex items-center gap-2 ${transparent ? 'text-white' : 'text-accent'}`} style={{ fontFamily: 'var(--font-logo)' }}>
             <Image src="/logo.png" alt="Prime State Lending" width={42} height={42} className="" />
             PRIME STATE
           </Link>
         </div>
 
         <nav className="hidden md:flex items-center gap-8">
-          <Link href="/home-purchase" className={`text-sm font-medium transition-colors ${transparent ? 'text-white/80 hover:text-white' : 'text-slate-500 hover:text-slate-900'}`}>Buy a Home</Link>
-          <Link href="/calculators" className={`text-sm font-medium transition-colors ${transparent ? 'text-white/80 hover:text-white' : 'text-slate-500 hover:text-slate-900'}`}>Rates</Link>
+          <Link href="/home-purchase" className={`text-sm font-medium transition-colors ${transparent ? 'text-white/80 hover:text-white' : 'text-white/80 hover:text-white'}`}>Buy a Home</Link>
+          <Link href="/calculators" className={`text-sm font-medium transition-colors ${transparent ? 'text-white/80 hover:text-white' : 'text-white/80 hover:text-white'}`}>Rates</Link>
           <div className="relative" ref={dropdownRef}>
             <button
               onClick={() => setResourcesOpen(!resourcesOpen)}
-              className={`text-sm font-medium transition-colors flex items-center gap-1 ${transparent ? 'text-white/80 hover:text-white' : 'text-slate-500 hover:text-slate-900'}`}
+              className={`text-sm font-medium transition-colors flex items-center gap-1 ${transparent ? 'text-white/80 hover:text-white' : 'text-white/80 hover:text-white'}`}
             >
               Resources
               <Icon
@@ -67,48 +67,56 @@ export default function Navbar() {
               />
             </button>
             {resourcesOpen && (
-              <div className="absolute top-full left-0 mt-2 w-48 bg-white border border-slate-200 rounded-lg shadow-lg py-2 z-50">
+              <div className="absolute top-full left-0 mt-2 w-48 bg-white border border-edge rounded-lg shadow-lg py-2 z-50">
                 <Link
                   href="/loan-programs"
-                  className="block px-4 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors"
+                  className="block px-4 py-2 text-sm text-body hover:bg-surface hover:text-heading transition-colors"
                   onClick={() => setResourcesOpen(false)}
                 >
                   Loan Programs
                 </Link>
                 <Link
                   href="/loan-process"
-                  className="block px-4 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors"
+                  className="block px-4 py-2 text-sm text-body hover:bg-surface hover:text-heading transition-colors"
                   onClick={() => setResourcesOpen(false)}
                 >
                   Loan Process
                 </Link>
                 <Link
                   href="/mortgage-basics"
-                  className="block px-4 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors"
+                  className="block px-4 py-2 text-sm text-body hover:bg-surface hover:text-heading transition-colors"
                   onClick={() => setResourcesOpen(false)}
                 >
                   Mortgage Basics
                 </Link>
                 <Link
                   href="/faq"
-                  className="block px-4 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors"
+                  className="block px-4 py-2 text-sm text-body hover:bg-surface hover:text-heading transition-colors"
                   onClick={() => setResourcesOpen(false)}
                 >
                   FAQ
                 </Link>
+                <Link
+                  href="/online-forms"
+                  className="block px-4 py-2 text-sm text-body hover:bg-surface hover:text-heading transition-colors"
+                  onClick={() => setResourcesOpen(false)}
+                >
+                  Online Forms
+                </Link>
               </div>
             )}
           </div>
-          <Link href="/about" className={`text-sm font-medium transition-colors ${transparent ? 'text-white/80 hover:text-white' : 'text-slate-500 hover:text-slate-900'}`}>About Us</Link>
+          <Link href="/blog" className={`text-sm font-medium transition-colors ${transparent ? 'text-white/80 hover:text-white' : 'text-white/80 hover:text-white'}`}>Blog</Link>
+          <Link href="/about" className={`text-sm font-medium transition-colors ${transparent ? 'text-white/80 hover:text-white' : 'text-white/80 hover:text-white'}`}>About Us</Link>
         </nav>
 
         <div className="flex items-center gap-4">
-          <Link href="/home-purchase" className={`h-9 px-4 inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors ${transparent ? 'bg-white text-slate-900 hover:bg-white/90' : 'bg-slate-900 text-white hover:bg-slate-800'}`}>
+          <Link href="/home-purchase" className={`h-9 px-4 inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors ${transparent ? 'bg-white text-heading hover:bg-white/90' : 'bg-accent text-white hover:bg-accent-hover'}`}>
             Get Pre-approved
           </Link>
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className={`md:hidden ${transparent ? 'text-white' : 'text-slate-600'}`}
+            className={`md:hidden ${transparent ? 'text-white' : 'text-white'}`}
           >
             <Icon icon={mobileMenuOpen ? "solar:close-square-linear" : "solar:hamburger-menu-linear"} className="text-2xl" />
           </button>
@@ -117,14 +125,14 @@ export default function Navbar() {
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-white border-t border-slate-200">
+        <div className="md:hidden bg-white border-t border-edge">
           <nav className="px-6 py-4 space-y-3">
-            <Link href="/home-purchase" className="block text-sm font-medium text-slate-500 hover:text-slate-900 transition-colors">Buy a Home</Link>
-            <Link href="/calculators" className="block text-sm font-medium text-slate-500 hover:text-slate-900 transition-colors">Rates</Link>
+            <Link href="/home-purchase" className="block text-sm font-medium text-body hover:text-heading transition-colors">Buy a Home</Link>
+            <Link href="/calculators" className="block text-sm font-medium text-body hover:text-heading transition-colors">Rates</Link>
             <div>
               <button
                 onClick={() => setMobileResourcesOpen(!mobileResourcesOpen)}
-                className="w-full text-left text-sm font-medium text-slate-500 hover:text-slate-900 transition-colors flex items-center gap-1"
+                className="w-full text-left text-sm font-medium text-body hover:text-heading transition-colors flex items-center gap-1"
               >
                 Resources
                 <Icon
@@ -134,14 +142,16 @@ export default function Navbar() {
               </button>
               {mobileResourcesOpen && (
                 <div className="pl-4 mt-2 space-y-2">
-                  <Link href="/loan-programs" className="block text-sm text-slate-500 hover:text-slate-900 transition-colors">Loan Programs</Link>
-                  <Link href="/loan-process" className="block text-sm text-slate-500 hover:text-slate-900 transition-colors">Loan Process</Link>
-                  <Link href="/mortgage-basics" className="block text-sm text-slate-500 hover:text-slate-900 transition-colors">Mortgage Basics</Link>
-                  <Link href="/faq" className="block text-sm text-slate-500 hover:text-slate-900 transition-colors">FAQ</Link>
+                  <Link href="/loan-programs" className="block text-sm text-body hover:text-heading transition-colors">Loan Programs</Link>
+                  <Link href="/loan-process" className="block text-sm text-body hover:text-heading transition-colors">Loan Process</Link>
+                  <Link href="/mortgage-basics" className="block text-sm text-body hover:text-heading transition-colors">Mortgage Basics</Link>
+                  <Link href="/faq" className="block text-sm text-body hover:text-heading transition-colors">FAQ</Link>
+                  <Link href="/online-forms" className="block text-sm text-body hover:text-heading transition-colors">Online Forms</Link>
                 </div>
               )}
             </div>
-            <Link href="/about" className="block text-sm font-medium text-slate-500 hover:text-slate-900 transition-colors">About Us</Link>
+            <Link href="/blog" className="block text-sm font-medium text-body hover:text-heading transition-colors">Blog</Link>
+            <Link href="/about" className="block text-sm font-medium text-body hover:text-heading transition-colors">About Us</Link>
           </nav>
         </div>
       )}

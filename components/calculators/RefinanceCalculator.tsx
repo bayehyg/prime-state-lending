@@ -26,85 +26,85 @@ export default function RefinanceCalculator() {
     <div className="space-y-8">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-          <label className="block text-xs font-medium text-slate-500 mb-2 uppercase tracking-wide">Current Loan Balance</label>
+          <label className="block text-xs font-medium text-body mb-2 uppercase tracking-wide">Current Loan Balance</label>
           <div className="relative">
-            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm">$</span>
+            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-body/70 text-sm">$</span>
             <input
               type="number"
               value={currentBalance}
               onChange={(e) => setCurrentBalance(Number(e.target.value))}
-              className="w-full h-11 border border-slate-200 rounded-lg px-8 text-slate-900 text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full h-11 border border-edge rounded-lg px-8 text-heading text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-accent"
             />
           </div>
         </div>
 
         <div>
-          <label className="block text-xs font-medium text-slate-500 mb-2 uppercase tracking-wide">Current Interest Rate (%)</label>
+          <label className="block text-xs font-medium text-body mb-2 uppercase tracking-wide">Current Interest Rate (%)</label>
           <input
             type="number"
             step="0.001"
             value={currentRate}
             onChange={(e) => setCurrentRate(Number(e.target.value))}
-            className="w-full h-11 border border-slate-200 rounded-lg px-4 text-slate-900 text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full h-11 border border-edge rounded-lg px-4 text-heading text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-accent"
           />
         </div>
 
         <div>
-          <label className="block text-xs font-medium text-slate-500 mb-2 uppercase tracking-wide">New Interest Rate (%)</label>
+          <label className="block text-xs font-medium text-body mb-2 uppercase tracking-wide">New Interest Rate (%)</label>
           <input
             type="number"
             step="0.001"
             value={newRate}
             onChange={(e) => setNewRate(Number(e.target.value))}
-            className="w-full h-11 border border-slate-200 rounded-lg px-4 text-slate-900 text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full h-11 border border-edge rounded-lg px-4 text-heading text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-accent"
           />
         </div>
 
         <div>
-          <label className="block text-xs font-medium text-slate-500 mb-2 uppercase tracking-wide">Remaining Term (Years)</label>
+          <label className="block text-xs font-medium text-body mb-2 uppercase tracking-wide">Remaining Term (Years)</label>
           <input
             type="number"
             value={remainingTerm}
             onChange={(e) => setRemainingTerm(Number(e.target.value))}
-            className="w-full h-11 border border-slate-200 rounded-lg px-4 text-slate-900 text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full h-11 border border-edge rounded-lg px-4 text-heading text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-accent"
           />
         </div>
 
         <div className="md:col-span-2">
-          <label className="block text-xs font-medium text-slate-500 mb-2 uppercase tracking-wide">Estimated Closing Costs</label>
+          <label className="block text-xs font-medium text-body mb-2 uppercase tracking-wide">Estimated Closing Costs</label>
           <div className="relative">
-            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm">$</span>
+            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-body/70 text-sm">$</span>
             <input
               type="number"
               value={closingCosts}
               onChange={(e) => setClosingCosts(Number(e.target.value))}
-              className="w-full h-11 border border-slate-200 rounded-lg px-8 text-slate-900 text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full h-11 border border-edge rounded-lg px-8 text-heading text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-accent"
             />
           </div>
         </div>
       </div>
 
       {/* Results */}
-      <div className="bg-white border border-slate-200 rounded-2xl p-8">
+      <div className="bg-white border border-edge rounded-2xl p-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
-            <span className="block text-xs text-slate-500 mb-2">Current Monthly Payment</span>
-            <span className="text-2xl font-semibold text-slate-900">${currentMonthly.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+            <span className="block text-xs text-body mb-2">Current Monthly Payment</span>
+            <span className="text-2xl font-semibold text-heading">${currentMonthly.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
           </div>
           <div>
-            <span className="block text-xs text-slate-500 mb-2">New Monthly Payment</span>
-            <span className="text-2xl font-semibold text-emerald-600">${newMonthly.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+            <span className="block text-xs text-body mb-2">New Monthly Payment</span>
+            <span className="text-2xl font-semibold text-accent">${newMonthly.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
           </div>
           <div>
-            <span className="block text-xs text-slate-500 mb-2">Monthly Savings</span>
-            <span className="text-2xl font-semibold text-indigo-600">${monthlySavings.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+            <span className="block text-xs text-body mb-2">Monthly Savings</span>
+            <span className="text-2xl font-semibold text-accent">${monthlySavings.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
           </div>
         </div>
 
-        <div className="mt-8 pt-8 border-t border-slate-100">
+        <div className="mt-8 pt-8 border-t border-edge/50">
           <div className="flex justify-between items-center">
-            <span className="text-sm text-slate-600">Break-even Point</span>
-            <span className="text-lg font-semibold text-slate-900">{breakEvenMonths.toFixed(1)} months</span>
+            <span className="text-sm text-body">Break-even Point</span>
+            <span className="text-lg font-semibold text-heading">{breakEvenMonths.toFixed(1)} months</span>
           </div>
         </div>
       </div>

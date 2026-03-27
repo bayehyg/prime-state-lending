@@ -77,14 +77,14 @@ export default function Hero() {
             >
               <Link
                 href="/home-purchase"
-                className="w-full sm:w-auto h-12 px-8 inline-flex items-center justify-center rounded-lg bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700 transition-colors shadow-lg"
+                className="w-full sm:w-auto h-12 px-8 inline-flex items-center justify-center rounded-lg bg-accent text-white text-sm font-medium hover:bg-accent-hover transition-colors shadow-lg"
               >
                 Start Your Application
                 <span className="ml-2">→</span>
               </Link>
               <Link
                 href="/contact"
-                className="w-full sm:w-auto h-12 px-8 inline-flex items-center justify-center rounded-lg border border-white text-white text-sm font-medium hover:bg-white hover:text-slate-900 transition-colors"
+                className="w-full sm:w-auto h-12 px-8 inline-flex items-center justify-center rounded-lg border border-white text-white text-sm font-medium hover:bg-white hover:text-heading transition-colors"
               >
                 Contact Us
               </Link>

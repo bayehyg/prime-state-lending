@@ -48,25 +48,25 @@ export default function LoanProgramModal({ isOpen, onClose, title, content }: Lo
         {/* Close button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 z-10 w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-700 transition-colors"
+          className="absolute top-4 right-4 z-10 w-8 h-8 flex items-center justify-center rounded-full bg-surface text-body hover:bg-edge hover:text-body transition-colors"
           aria-label="Close modal"
         >
           <Icon icon="solar:close-circle-linear" className="text-xl" />
         </button>
 
         <div className="p-8 sm:p-10">
-          <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight text-slate-900 mb-6 pr-8">
+          <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight text-heading mb-6 pr-8">
             {title}
           </h2>
 
-          <div className="prose prose-slate prose-sm max-w-none [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:text-slate-900 [&_h3]:mt-6 [&_h3]:mb-3 [&_h4]:text-base [&_h4]:font-semibold [&_h4]:text-slate-800 [&_h4]:mt-4 [&_h4]:mb-2 [&_p]:text-slate-600 [&_p]:leading-relaxed [&_p]:mb-4 [&_ul]:text-slate-600 [&_ul]:mb-4 [&_li]:mb-1">
+          <div className="prose prose-neutral prose-sm max-w-none [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:text-heading [&_h3]:mt-6 [&_h3]:mb-3 [&_h4]:text-base [&_h4]:font-semibold [&_h4]:text-heading [&_h4]:mt-4 [&_h4]:mb-2 [&_p]:text-body [&_p]:leading-relaxed [&_p]:mb-4 [&_ul]:text-body [&_ul]:mb-4 [&_li]:mb-1">
             {content}
           </div>
 
-          <div className="mt-8 pt-6 border-t border-slate-200">
+          <div className="mt-8 pt-6 border-t border-edge">
             <Link
               href="/contact"
-              className="inline-flex items-center gap-2 bg-indigo-600 text-white px-6 py-3 rounded-xl text-sm font-medium hover:bg-indigo-700 transition-colors"
+              className="inline-flex items-center gap-2 bg-accent text-white px-6 py-3 rounded-xl text-sm font-medium hover:bg-accent-hover transition-colors"
             >
               Get Started <Icon icon="solar:arrow-right-linear" />
             </Link>

@@ -19,10 +19,10 @@ function HeroSection() {
           transition={{ duration: 0.4 }}
           className="text-center mb-10"
         >
-          <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight text-slate-900 mb-4">
+          <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight text-heading mb-4">
             Find Out What You Can<br className="hidden sm:block" /> Afford in Minutes
           </h1>
-          <p className="text-lg text-slate-500 mb-6">
+          <p className="text-lg text-body mb-6">
             No paperwork. No commitment. Just a quick estimate.
           </p>
 
@@ -33,7 +33,7 @@ function HeroSection() {
               '✓ Takes 2 minutes',
               '✓ No credit pull',
             ].map((item) => (
-              <span key={item} className="text-sm font-medium text-slate-500">
+              <span key={item} className="text-sm font-medium text-body">
                 {item}
               </span>
             ))}
