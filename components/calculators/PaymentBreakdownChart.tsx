@@ -12,8 +12,8 @@ interface PaymentBreakdownChartProps {
 
 const RADIAN = Math.PI / 180;
 
-function renderPercentLabel({ cx, cy, midAngle, innerRadius, outerRadius, percent }: {
-  cx: number; cy: number; midAngle: number; innerRadius: number; outerRadius: number; percent: number;
+function renderPercentLabel({ cx = 0, cy = 0, midAngle = 0, innerRadius = 0, outerRadius = 0, percent = 0 }: {
+  cx?: number; cy?: number; midAngle?: number; innerRadius?: number; outerRadius?: number; percent?: number;
 }) {
   if (percent < 0.03) return null;
   const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
